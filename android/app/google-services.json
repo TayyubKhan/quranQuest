@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "469859535296",
+    "project_id": "quranquest-72cfa",
+    "storage_bucket": "quranquest-72cfa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:469859535296:android:cda66759ccf0d0e8e32025",
+        "android_client_info": {
+          "package_name": "com.example.quranquest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAiST8f6SylSO5Iktux4jGER0b3feKAarg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
