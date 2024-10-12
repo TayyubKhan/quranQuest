@@ -2,19 +2,15 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:grouped_list/grouped_list.dart';
 import 'package:quranquest/core/go_router/router.dart';
 import 'package:quranquest/features/chat_bot/widgets/MarkDownSheet.dart';
 
 import '../../../../core/themes/color_scheme.dart';
 import '../../ChatViewModel/ChatViewModel.dart';
-import '../../models/chat_model.dart';
 import '../../repositories/chat_repository.dart';
 import '../../widgets/AppDrawer.dart';
 
@@ -145,7 +141,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                                 horizontal: 8.0, vertical: 4.0),
                             child: Container(
                               decoration: BoxDecoration(
-                                color: isUser ? lightColor : darkColor,
+                                color: isUser
+                                    ? lightColor.withOpacity(0.8)
+                                    : darkColor.withOpacity(0.8),
                                 borderRadius: BorderRadius.only(
                                   topLeft: isUser
                                       ? const Radius.circular(12)

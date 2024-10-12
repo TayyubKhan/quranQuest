@@ -1,16 +1,25 @@
-# quranquest
+# Islamic QUEST
 
-A new Flutter project.
+## Overview
 
-## Getting Started
+**Islamic QUEST** is an AI-powered chatbot application designed to deliver authentic Islamic knowledge to users worldwide. Whether you're seeking guidance on religious practices, learning more about the Quran, or exploring Islamic traditions, **Islamic QUEST** provides accurate and thoughtful answers based on trusted Islamic sources.
 
-This project is a starting point for a Flutter application.
+## Key Features
 
-A few resources to get you started if this is your first Flutter project:
+- **Instant Islamic Guidance**: Receive immediate answers to questions about Islamic practices, rituals, and teachings, including prayer, fasting, the Quran, and Hadiths.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- **AI-Powered by Gemini**: Harnesses the advanced capabilities of **Gemini**, a state-of-the-art AI model, to deliver contextually accurate and insightful responses.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- **User-Friendly Interface**: Designed with simplicity in mind, making it easy for users of all ages to ask questions and receive clear answers.
+
+- **Comprehensive Knowledge Base**: Draws from a wide array of trusted Islamic sources, ensuring that responses are well-rounded and authentic.
+
+- **24/7 Availability**: Always ready to assist, offering answers and guidance anytime, anywhere.
+
+## Why Islamic QUEST?
+
+**Islamic QUEST** is built using advanced prompt engineering techniques, ensuring that every response is not only accurate but also contextually appropriate to the user's needs. Whether you’re a learner, a scholar, or someone exploring the faith, **Islamic QUEST** is designed to be your companion in understanding Islam.
+
+## How to Use
+
+Simply type your question into the chatbot, and the AI will provide a response based on Islamic knowledge. The app is intuitive, ensuring that even first-time users can easily navigate and find the information they seek.
