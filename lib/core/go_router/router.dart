@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart'; // For creating iOS-styled widgets
 import 'package:go_router/go_router.dart'; // Routing package for navigation
 import 'package:quranquest/features/auth/views/screens/login_screen.dart'; // Login screen import
 import 'package:quranquest/features/auth/views/screens/signup_screen.dart'; // Signup screen import
+import 'package:quranquest/features/chat_bot/views/screens/Guidance.dart';
+import 'package:quranquest/features/chat_bot/views/screens/SettingScreen.dart';
 import 'package:quranquest/features/chat_bot/views/screens/chat_screen.dart'; // Chat screen import
 
 import '../../features/auth/services/auth_service.dart'; // Importing custom auth services
@@ -87,16 +89,28 @@ class AppRouter {
             const SignInScreen(), // Widget to build when navigating to this route
       ),
       GoRoute(
+        name: RouteTo.setting, // Name of the route for logging in
+        path: '/setting', // Path for the login screen
+        builder: (context, state) =>
+            SettingScreen(), // Widget to build when navigating to this route
+      ),
+      GoRoute(
         name: RouteTo.chat, // Name of the route for the chat screen
         path: '/chat', // Path for the chat screen
         builder: (context, state) =>
-            const ChatScreen(), // Widget to build when navigating to the chat screen
+            ChatScreen(), // Widget to build when navigating to the chat screen
       ),
       GoRoute(
         name: RouteTo.signUp, // Name of the route for signing up
         path: '/signUp', // Path for the signup screen
         builder: (context, state) =>
             const SignUpScreen(), // Widget to build when navigating to the signup screen
+      ),
+      GoRoute(
+        name: RouteTo.guide, // Name of the route for signing up
+        path: '/guide', // Path for the signup screen
+        builder: (context, state) =>
+            const QuranQuestGuideScreen(), // Widget to build when navigating to the signup screen
       ),
     ],
 

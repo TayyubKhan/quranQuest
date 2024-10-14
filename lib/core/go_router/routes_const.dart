@@ -14,4 +14,7 @@ class RouteTo {
 
   // Route for the chat screen.
   static const String chat = '/chat';
+
+  static const String setting = '/setting';
+  static const String guide = '/guide';
 }

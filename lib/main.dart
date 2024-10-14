@@ -34,7 +34,7 @@ class App extends ConsumerWidget {
       routeInformationParser: AppRouter.router.routeInformationParser,
       // The router delegate that manages the navigation stack
       routerDelegate: AppRouter.router.routerDelegate,
-      title: 'GoRouter', // Title of the application
+      title: 'Quran Quest', // Title of the application
     );
   }
 }

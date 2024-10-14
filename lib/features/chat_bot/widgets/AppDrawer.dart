@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quranquest/core/go_router/router.dart';
 import 'package:quranquest/features/chat_bot/ChatViewModel/ChatViewModel.dart';
 import '../../../../core/themes/color_scheme.dart';
 
@@ -94,10 +95,8 @@ class ChatDrawer extends ConsumerWidget {
                                         'Are you sure you want to delete this chat?'),
                                     actions: [
                                       TextButton(
-                                        onPressed: () async {
-                                          await chatNotifier.deleteChat(chatId);
-                                          Navigator.of(context).pop(false);
-                                        },
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(false),
                                         child: Text(
                                           'Cancel',
                                           style: TextStyle(color: darkColor),
@@ -129,6 +128,25 @@ class ChatDrawer extends ConsumerWidget {
                   );
                 },
               ),
+            ),
+            // Settings Icon at the bottom
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0), // Add some padding
+              child:
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                IconButton(
+                  icon: Icon(Icons.settings, color: darkColor),
+                  onPressed: () {
+                    AppRouter.router.go(RouteTo.setting);
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.info, color: darkColor),
+                  onPressed: () {
+                    AppRouter.router.go(RouteTo.guide);
+                  },
+                )
+              ]),
             ),
           ],
         ),
