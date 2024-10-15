@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,6 +14,7 @@ import '../../../../core/themes/color_scheme.dart';
 import '../../ChatViewModel/ChatViewModel.dart';
 import '../../repositories/chat_repository.dart';
 import '../../widgets/AppDrawer.dart';
+import 'dart:html' show window;
 
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
@@ -60,16 +62,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   }
 
   final TextEditingController _textController = TextEditingController();
-  final ChatRepository _chatRepository = ChatRepository();
+  ChatRepository? _chatRepository;
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     super.build(context);
     final chatMessages = ref.watch(chatNotifierProvider);
-
     // Delay scroll after a message is added
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
+      _chatRepository = ChatRepository(ref);
+    });
 
     return SafeArea(
       child: Scaffold(
@@ -77,7 +81,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
           iconTheme: IconThemeData(color: darkColor),
           title: Image.asset(
             kIsWeb ? 'logo.png' : 'assets/logo.png',
-            width: width*0.04,
+            width: width * 0.04,
           ),
           actions: [
             Padding(
@@ -183,66 +187,83 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                         },
                       ),
                     ),
-                    ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: width * .8),
-                      child: GestureDetector(
-                        onTap: () {
-                          FocusScope.of(context).unfocus();
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0, vertical: 18),
-                          child: TextField(
-                            style: GoogleFonts.nunito(color: darkColor),
-                            controller: _textController,
-                            decoration: InputDecoration(
-                              hintText: 'Start your quest...',
-                              filled: true,
-                              fillColor: darkColor.withOpacity(0.2),
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 16, horizontal: 20),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius: BorderRadius.circular(10),
+                    ref.watch(topicProvider).isNotEmpty ||
+                            ref.watch(generalProvider)
+                        ? ConstrainedBox(
+                            constraints: BoxConstraints(maxWidth: width * .8),
+                            child: GestureDetector(
+                              onTap: () {
+                                FocusScope.of(context).unfocus();
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0, vertical: 18),
+                                child: TextField(
+                                  style: GoogleFonts.nunito(color: darkColor),
+                                  controller: _textController,
+                                  decoration: InputDecoration(
+                                    hintText: 'Start your quest...',
+                                    filled: true,
+                                    fillColor: darkColor.withOpacity(0.2),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        vertical: 16, horizontal: 20),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    suffixIcon:
+                                        Consumer(builder: (context, ref, _) {
+                                      return !ref.watch(isLoadingProvider)
+                                          ? InkWell(
+                                              onTap: () async {
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                                await sendChatMessage(
+                                                    _textController.text);
+                                                _scrollToBottom();
+                                              },
+                                              child: Icon(
+                                                Icons.send,
+                                                color: darkColor,
+                                              ),
+                                            )
+                                          : Container(
+                                              padding: const EdgeInsets.all(12),
+                                              width: 18,
+                                              height: 18,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 1.5,
+                                                color: darkColor,
+                                              ),
+                                            );
+                                    }),
+                                  ),
+                                  onSubmitted: (value) {
+                                    sendChatMessage(_textController.text);
+                                  },
+                                  cursorColor: darkColor,
+                                ),
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              suffixIcon: Consumer(builder: (context, ref, _) {
-                                return !ref.watch(isLoadingProvider)
-                                    ? InkWell(
-                                        onTap: () async {
-                                          FocusScope.of(context).unfocus();
-                                          await sendChatMessage(
-                                              _textController.text);
-                                          _scrollToBottom();
-                                        },
-                                        child: Icon(
-                                          Icons.send,
-                                          color: darkColor,
-                                        ),
-                                      )
-                                    : Container(
-                                        padding: const EdgeInsets.all(12),
-                                        width: 18,
-                                        height: 18,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 1.5,
-                                          color: darkColor,
-                                        ),
-                                      );
-                              }),
                             ),
-                            onSubmitted: (value) {
-                              sendChatMessage(_textController.text);
-                            },
-                            cursorColor: darkColor,
+                          )
+                        : SizedBox(
+                            width: width,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                buildListItem(context, 'Prayer'),
+                                buildListItem(context, 'Quranic Verses'),
+                                buildListItem(context, 'Hadith'),
+                                buildListItem(context, 'Zakat'),
+                                buildListItem(context, 'Islamic Etiquettes'),
+                              ],
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -266,7 +287,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 
       await Future.delayed(const Duration(seconds: 2));
 
-      final aiResponse = await _chatRepository.sendChatMessage(message);
+      final aiResponse = await _chatRepository?.sendChatMessage(message);
 
       if (aiResponse != null) {
         await chatNotifier.sendMessage(aiResponse, fromUser: false);
@@ -280,6 +301,76 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       print('error');
     }
   }
+
+  Widget buildListItem(BuildContext context, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      child: Container(
+        width: kIsWeb ? 400 : double.infinity,
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.white, // You can change the color as needed
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              text,
+              style: TextStyle(
+                fontSize: 18.0,
+                color: darkColor, // Use darkColor for the text
+              ),
+            ),
+            InkWell(
+              onTap: () async {
+                ref.read(isLoadingProvider.notifier).state = true;
+                final chatNotifier = ref.read(chatNotifierProvider.notifier);
+                updateTopicProvider(ref, text);
+                final message =
+                    await _chatRepository?.sendChatMessage("Who are you?");
+               await chatNotifier.sendMessage(message!, fromUser: false);
+                ref.read(isLoadingProvider.notifier).state = false;
+
+              },
+              child: Icon(
+                Icons.send,
+                color: darkColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 final isLoadingProvider = StateProvider<bool>((ref) => false);
+
+final generalProvider = StateProvider<bool>((ref) {
+  final value = window.localStorage['generalProvider'];
+  return value == 'true';
+});
+
+// Update function to change value and store it in localStorage
+void updateGeneralProvider(WidgetRef ref, bool newValue) {
+  // Update the provider state
+  ref.read(generalProvider.notifier).state = newValue;
+
+  // Save the new value in localStorage
+  window.localStorage['generalProvider'] =
+      newValue.toString(); // Convert bool to string
+}
+
+final topicProvider = StateProvider<String>((ref) {
+  return window.localStorage['topicProvider'] ?? ''; // Default to empty string
+});
+
+// Update function to change value and store it in localStorage
+void updateTopicProvider(WidgetRef ref, String newValue) {
+  // Update the provider state
+  ref.read(topicProvider.notifier).state = newValue;
+
+  // Save the new value in localStorage
+  window.localStorage['topicProvider'] = newValue; // Store string value
+}

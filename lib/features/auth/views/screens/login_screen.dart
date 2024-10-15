@@ -45,7 +45,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           password: _passwordController.text,
         );
         AppRouter.router
-            .go(RouteTo.chat); // Navigate to chat screen on successful sign-in.
+            .go(RouteTo.welcome); // Navigate to chat screen on successful sign-in.
       } catch (e) {
         // Show error message if sign-in fails.
         ScaffoldMessenger.of(context).showSnackBar(

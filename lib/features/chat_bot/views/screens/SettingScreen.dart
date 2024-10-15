@@ -100,7 +100,10 @@ class _SettingScreenState extends State<SettingScreen> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: CircularProgressIndicator(
+              color: darkColor,
+            ))
           : Padding(
               padding: EdgeInsets.symmetric(horizontal: width * .1),
               child: Column(

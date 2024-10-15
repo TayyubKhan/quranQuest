@@ -176,7 +176,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     child: TextButton(
                       onPressed: () {
                         AppRouter.router
-                            .go(RouteTo.signIn); // Navigate to sign-in route
+                            .go(RouteTo.welcome); // Navigate to sign-in route
                       },
                       child: Text(
                         "Already have an account? Sign in", // Link text
