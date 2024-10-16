@@ -54,7 +54,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         await users.doc(_auth.currentUser!.uid).set({
           'name': _nameController.text,
         }).then((value) {
-          AppRouter.router.pushNamed(RouteTo.chat);
+          AppRouter.router.pushNamed(RouteTo.welcome);
         });
         // Navigate to the chat screen after successful sign-up
       } catch (e) {
