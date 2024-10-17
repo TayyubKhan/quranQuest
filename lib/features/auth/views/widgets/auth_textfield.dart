@@ -9,11 +9,17 @@ class QuranQuestTextField extends StatelessWidget {
   final String label; // Label displayed above the text field
   final bool obscureText; // Flag for password obscuring
   final bool enabled; // Flag to enable or disable the text field
-  final FormFieldValidator<String>? validator; // Validator function for input validation
-  final InputBorder? errorBorder; // Border style for the text field when there's an error
-  final InputBorder? focusedErrorBorder; // Border style when focused and there's an error
-  final InputBorder? enabledBorder; // Border style when the text field is enabled
-  final InputBorder? focusedBorder; // Border style when the text field is focused
+  final FormFieldValidator<String>?
+      validator; // Validator function for input validation
+  final InputBorder?
+      errorBorder; // Border style for the text field when there's an error
+  final InputBorder?
+      focusedErrorBorder; // Border style when focused and there's an error
+  final InputBorder?
+      enabledBorder; // Border style when the text field is enabled
+  final InputBorder?
+      focusedBorder; // Border style when the text field is focused
+  final Widget? suffixIcon;
 
   // Constructor for the QuranQuestTextField widget
   const QuranQuestTextField({
@@ -27,6 +33,7 @@ class QuranQuestTextField extends StatelessWidget {
     this.focusedErrorBorder, // Optional focused error border style
     this.enabledBorder, // Optional enabled border style
     this.focusedBorder, // Optional focused border style
+    this.suffixIcon,
   });
 
   @override
@@ -35,15 +42,19 @@ class QuranQuestTextField extends StatelessWidget {
       controller: controller, // Assign the text editing controller
       obscureText: obscureText, // Set if the text should be obscured
       enabled: enabled, // Enable or disable the text field
-      style: context.tTheme.bodyMedium!.copyWith( // Text style based on current theme
+      style: context.tTheme.bodyMedium!.copyWith(
+        // Text style based on current theme
         color: darkColor, // Set text color to darkColor from the app theme
       ),
       cursorColor: darkColor, // Set cursor color to darkColor
-      decoration: inputDecoration( // Call the inputDecoration function for consistent styling
-        context: context,
-        labelText: label, // Set the label text
-        hintText: label, // Set the hint text to the same as the label
-      ),
+      decoration: inputDecoration(
+          // Call the inputDecoration function for consistent styling
+          context: context,
+          labelText: label, // Set the label text
+          hintText: label,
+          // Set the hint text to the same as the label
+          suffixIcon: suffixIcon),
+
       validator: validator, // Set the validator for input validation
     );
   }

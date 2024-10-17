@@ -40,12 +40,15 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           .notifier); // Accessing the AuthViewModel instance.
       try {
         // Attempt to sign in with the provided email and password.
-        await authViewModel.signIn(
+        await authViewModel
+            .signIn(
           email: _emailController.text,
           password: _passwordController.text,
-        );
-        AppRouter.router
-            .go(RouteTo.welcome); // Navigate to chat screen on successful sign-in.
+        )
+            .then((v) {
+          AppRouter.router.go(RouteTo
+              .welcome); // Navigate to chat screen on successful sign-in.
+        });
       } catch (e) {
         // Show error message if sign-in fails.
         ScaffoldMessenger.of(context).showSnackBar(
@@ -72,7 +75,6 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-
     // Determine if the app is running on a web platform based on screen width.
     final isWeb = MediaQuery.of(context).size.width > 600;
     final buttonWidth =
@@ -93,7 +95,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 children: [
                   Image.asset(
                     kIsWeb ? 'logo.png' : 'assets/logo.png',
-                    width: width * 0.35,
+                    width: width * 0.2,
                   ),
                   const SizedBox(height: 25), // Spacer.
                   Text(
@@ -132,9 +134,22 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                       controller:
                           _passwordController, // Password input controller.
                       label: 'Password', // Label for the password text field.
-                      obscureText: true, // Hide the password input.
+                      obscureText: !ref
+                          .watch(visibleProvider), // Hide the password input.
                       validator: Validators
                           .validatePassword, // Password validation function.
+                      suffixIcon: InkWell(
+                        onTap: () {
+                          ref.watch(visibleProvider.notifier).state =
+                              !ref.read(visibleProvider);
+                        },
+                        child: Icon(
+                          ref.watch(visibleProvider)
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: darkColor,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 30), // Spacer.
@@ -174,3 +189,5 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     );
   }
 }
+
+final visibleProvider = StateProvider<bool>((ref) => false);

@@ -7,14 +7,14 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:quranquest/core/go_router/router.dart';
+import 'package:quranquest/features/chat_bot/ChatViewModel/localApiViewModel.dart';
 import 'package:quranquest/features/chat_bot/widgets/MarkDownSheet.dart';
-
+import '../../../../core/go_router/router.dart';
 import '../../../../core/themes/color_scheme.dart';
 import '../../ChatViewModel/ChatViewModel.dart';
 import '../../repositories/chat_repository.dart';
 import '../../widgets/AppDrawer.dart';
-import 'dart:html' show window;
+import "dart:html" show window;
 
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
@@ -83,36 +83,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
             kIsWeb ? 'logo.png' : 'assets/logo.png',
             width: width * 0.04,
           ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 15),
-              child: InkWell(
-                  onTap: () async {
-                    log('User is trying to sign out.');
-                    final auth = FirebaseAuth.instance;
-                    try {
-                      // Check if the platform is web
-                      if (kIsWeb) {
-                        // Set persistence to NONE before signing out
-                        await auth.setPersistence(Persistence.NONE);
-                      }
-                      // Sign out the user
-                      await auth.signOut();
-
-                      // Invalidate the chat provider
-                      ref.invalidate(chatNotifierProvider);
-                      // Redirect to the sign-in page
-                      AppRouter.router.go(RouteTo.signIn);
-                    } catch (error) {
-                      log('Error during sign out: $error');
-                      // You can also show an error message to the user if needed
-                    }
-                  },
-                  child: Text('Logout',
-                      style:
-                          GoogleFonts.nunito(color: const Color(0xff004d40)))),
-            ),
-          ],
         ),
         drawer: const ChatDrawer(),
         body: Stack(
@@ -187,83 +157,66 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                         },
                       ),
                     ),
-                    ref.watch(topicProvider).isNotEmpty ||
-                            ref.watch(generalProvider)
-                        ? ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: width * .8),
-                            child: GestureDetector(
-                              onTap: () {
-                                FocusScope.of(context).unfocus();
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8.0, vertical: 18),
-                                child: TextField(
-                                  style: GoogleFonts.nunito(color: darkColor),
-                                  controller: _textController,
-                                  decoration: InputDecoration(
-                                    hintText: 'Start your quest...',
-                                    filled: true,
-                                    fillColor: darkColor.withOpacity(0.2),
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 16, horizontal: 20),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    suffixIcon:
-                                        Consumer(builder: (context, ref, _) {
-                                      return !ref.watch(isLoadingProvider)
-                                          ? InkWell(
-                                              onTap: () async {
-                                                FocusScope.of(context)
-                                                    .unfocus();
-                                                await sendChatMessage(
-                                                    _textController.text);
-                                                _scrollToBottom();
-                                              },
-                                              child: Icon(
-                                                Icons.send,
-                                                color: darkColor,
-                                              ),
-                                            )
-                                          : Container(
-                                              padding: const EdgeInsets.all(12),
-                                              width: 18,
-                                              height: 18,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 1.5,
-                                                color: darkColor,
-                                              ),
-                                            );
-                                    }),
-                                  ),
-                                  onSubmitted: (value) {
-                                    sendChatMessage(_textController.text);
-                                  },
-                                  cursorColor: darkColor,
-                                ),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: width * .8),
+                      child: GestureDetector(
+                        onTap: () {
+                          FocusScope.of(context).unfocus();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 18),
+                          child: TextField(
+                            style: GoogleFonts.nunito(color: darkColor),
+                            controller: _textController,
+                            decoration: InputDecoration(
+                              hintText: 'Start your quest...',
+                              filled: true,
+                              fillColor: darkColor.withOpacity(0.2),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 16, horizontal: 20),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(10),
                               ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              suffixIcon: Consumer(builder: (context, ref, _) {
+                                return !ref.watch(isLoadingProvider)
+                                    ? InkWell(
+                                        onTap: () async {
+                                          FocusScope.of(context).unfocus();
+                                          await sendChatMessage(
+                                              _textController.text);
+                                          _scrollToBottom();
+                                        },
+                                        child: Icon(
+                                          Icons.send,
+                                          color: darkColor,
+                                        ),
+                                      )
+                                    : Container(
+                                        padding: const EdgeInsets.all(12),
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 1.5,
+                                          color: darkColor,
+                                        ),
+                                      );
+                              }),
                             ),
-                          )
-                        : SizedBox(
-                            width: width,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                buildListItem(context, 'Prayer'),
-                                buildListItem(context, 'Quranic Verses'),
-                                buildListItem(context, 'Hadith'),
-                                buildListItem(context, 'Zakat'),
-                                buildListItem(context, 'Islamic Etiquettes'),
-                              ],
-                            ),
+                            onSubmitted: (value) {
+                              sendChatMessage(_textController.text);
+                            },
+                            cursorColor: darkColor,
                           ),
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -280,68 +233,29 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       final chatNotifier = ref.read(chatNotifierProvider.notifier);
       _textController.clear();
       await chatNotifier.sendMessage(message, fromUser: true);
-
       await Future.delayed(
           const Duration(milliseconds: 300)); // Allow time for rendering
       _scrollToBottom();
-
+      String? aiResponse;
       await Future.delayed(const Duration(seconds: 2));
-
-      final aiResponse = await _chatRepository?.sendChatMessage(message);
-
+      try {
+        aiResponse = ref.watch(generalProvider)
+            ? await ref.read(apiProvider(message).future)
+            : await _chatRepository?.sendChatMessage(message);
+        if (ref.watch(generalProvider) && aiResponse!.contains('I\'m sorry')) {
+          aiResponse = await _chatRepository?.sendChatMessage(message);
+        }
+      } catch (error) {
+        aiResponse = await _chatRepository?.sendChatMessage(message);
+      }
       if (aiResponse != null) {
         await chatNotifier.sendMessage(aiResponse, fromUser: false);
       }
-
       ref.read(isLoadingProvider.notifier).state = false;
       await Future.delayed(
           const Duration(milliseconds: 300)); // Give time to load response
       _scrollToBottom();
-    } else {
-      print('error');
-    }
-  }
-
-  Widget buildListItem(BuildContext context, String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child: Container(
-        width: kIsWeb ? 400 : double.infinity,
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: Colors.white, // You can change the color as needed
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              text,
-              style: TextStyle(
-                fontSize: 18.0,
-                color: darkColor, // Use darkColor for the text
-              ),
-            ),
-            InkWell(
-              onTap: () async {
-                ref.read(isLoadingProvider.notifier).state = true;
-                final chatNotifier = ref.read(chatNotifierProvider.notifier);
-                updateTopicProvider(ref, text);
-                final message =
-                    await _chatRepository?.sendChatMessage("Who are you?");
-               await chatNotifier.sendMessage(message!, fromUser: false);
-                ref.read(isLoadingProvider.notifier).state = false;
-
-              },
-              child: Icon(
-                Icons.send,
-                color: darkColor,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    } else {}
   }
 }
 
@@ -360,17 +274,4 @@ void updateGeneralProvider(WidgetRef ref, bool newValue) {
   // Save the new value in localStorage
   window.localStorage['generalProvider'] =
       newValue.toString(); // Convert bool to string
-}
-
-final topicProvider = StateProvider<String>((ref) {
-  return window.localStorage['topicProvider'] ?? ''; // Default to empty string
-});
-
-// Update function to change value and store it in localStorage
-void updateTopicProvider(WidgetRef ref, String newValue) {
-  // Update the provider state
-  ref.read(topicProvider.notifier).state = newValue;
-
-  // Save the new value in localStorage
-  window.localStorage['topicProvider'] = newValue; // Store string value
 }

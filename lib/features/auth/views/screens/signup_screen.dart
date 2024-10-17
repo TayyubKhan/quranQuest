@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'; // Import the Material package for UI components
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod for state management
-import 'package:go_router/go_router.dart'; // Import GoRouter for navigation
 import 'package:google_fonts/google_fonts.dart'; // Import Google Fonts for custom text styles
 import 'package:quranquest/core/utils/validators.dart'; // Import validators for input validation
 import 'package:quranquest/features/auth/view_models/auth_viewmodel.dart'; // Import Auth ViewModel for authentication logic
@@ -54,7 +53,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         await users.doc(_auth.currentUser!.uid).set({
           'name': _nameController.text,
         }).then((value) {
-          AppRouter.router.pushNamed(RouteTo.welcome);
+          authViewModel
+              .signIn(
+                  email: _emailController.text,
+                  password: _passwordController.text)
+              .then((b) {
+            AppRouter.router.pushNamed(RouteTo.welcome);
+          });
         });
         // Navigate to the chat screen after successful sign-up
       } catch (e) {
@@ -89,7 +94,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 children: [
                   Image.asset(
                     kIsWeb ? 'logo.png' : 'assets/logo.png',
-                    width: width * 0.35,
+                    width: width * 0.25,
                   ),
                   const SizedBox(height: 25), // Spacer.
                   Text(
@@ -148,6 +153,18 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           obscureText: true, // Mask the input text for password
                           validator: Validators
                               .validatePassword, // Validation function for password
+                          suffixIcon: InkWell(
+                            onTap: () {
+                              ref.watch(signUpProvider.notifier).state =
+                                  !ref.read(signUpProvider);
+                            },
+                            child: Icon(
+                              ref.watch(signUpProvider)
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: darkColor,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -195,3 +212,5 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     );
   }
 }
+
+final signUpProvider = StateProvider<bool>((ref) => false);

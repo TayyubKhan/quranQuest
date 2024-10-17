@@ -21,8 +21,8 @@ class ChatRepository {
       model: 'gemini-1.5-flash-latest', // Specifies the AI model to use
       apiKey:
           'AIzaSyApXkoBUzUlDmaLiQ-ltTe49NJqm5N1yxA', // API key for authentication
-      systemInstruction: Content.text(generatePrompt(
-          ref.watch(topicProvider))), // Instruction for the AI model
+      systemInstruction:
+          Content.text(generatePrompt()), // Instruction for the AI model
     );
     _chat = _model.startChat(); // Starts a new chat session
   }

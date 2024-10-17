@@ -1,8 +1,13 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:quranquest/core/go_router/router.dart';
 import '../../../../core/themes/color_scheme.dart';
+import '../../ChatViewModel/ChatViewModel.dart';
 import 'chat_screen.dart';
 
 class WelcomeScreen extends ConsumerWidget {
@@ -23,6 +28,35 @@ class WelcomeScreen extends ConsumerWidget {
         ),
         centerTitle: true,
         backgroundColor: darkColor, // Set AppBar color to darkColor
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 15),
+            child: InkWell(
+                onTap: () async {
+                  final auth = FirebaseAuth.instance;
+                  try {
+                    // Check if the platform is web
+                    if (kIsWeb) {
+                      // Set persistence to NONE before signing out
+                      await auth.setPersistence(Persistence.NONE);
+                    }
+                    // Sign out the user
+                    await auth.signOut();
+
+                    // Invalidate the chat provider
+                    ref.invalidate(chatNotifierProvider);
+                    // Redirect to the sign-in page
+                    AppRouter.router.go(RouteTo.signIn);
+                  } catch (error) {
+                    log('Error during sign out: $error');
+                    // You can also show an error message to the user if needed
+                  }
+                  print(auth.currentUser!.uid);
+                },
+                child: Text('Logout',
+                    style: GoogleFonts.nunito(color: Colors.white))),
+          ),
+        ],
       ),
       body: Center(
         child: Padding(
@@ -55,7 +89,6 @@ class WelcomeScreen extends ConsumerWidget {
                 ),
                 onPressed: () {
                   updateGeneralProvider(ref, false);
-                  updateTopicProvider(ref, '');
                   AppRouter.router.go(RouteTo.chat);
                 },
                 child: const Text('Precise'),
